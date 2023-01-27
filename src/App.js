@@ -6,6 +6,10 @@ function App() {
   const [guestList, setGuestList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [refetch, setRefetch] = useState(true);
+  const [isReadOnly, setIsReadOnly] = useState(true);
+  const [firstNameChange, setFirstNameChange] = useState('');
+  const [lastNameChange, setLastNameChange] = useState('');
+  const [editId, setEditId] = useState('');
 
   const baseUrl = 'http://localhost:4000';
   const inputRef = useRef(null);
@@ -55,8 +59,8 @@ function App() {
       fetch(`${baseUrl}/guests/${guest.id}`, { method: 'DELETE' }).catch(
         (error) => console.log(error),
       );
-      setRefetch(!refetch);
     });
+    setGuestList([]);
   }
 
   // the u of crud
@@ -69,6 +73,16 @@ function App() {
       body: JSON.stringify({ attending: attending }),
     });
     setRefetch(!refetch);
+  }
+
+  async function handleNameUpdate(id, first_name, last_name) {
+    await fetch(`${baseUrl}/guests/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ firstName: first_name, lastName: last_name }),
+    });
   }
 
   return (
@@ -110,8 +124,30 @@ function App() {
               return (
                 <li key={guest.id + '_' + guest.lastName}>
                   <div data-test-id="guest">
-                    <input readOnly value={guest.firstName} />
-                    <input readOnly value={guest.lastName} />
+                    <input
+                      readOnly={guest.id === editId ? isReadOnly : !isReadOnly}
+                      value={
+                        guest.id === editId ? firstNameChange : guest.firstName
+                      }
+                      placeholder={guest.firstName}
+                      onChange={(event) => {
+                        if (!isReadOnly) {
+                          setFirstNameChange(event.currentTarget.value);
+                        }
+                      }}
+                    />
+                    <input
+                      readOnly={guest.id === editId ? isReadOnly : !isReadOnly}
+                      value={
+                        guest.id === editId ? lastNameChange : guest.lastName
+                      }
+                      placeholder={guest.lastName}
+                      onChange={(event) => {
+                        if (!isReadOnly) {
+                          setLastNameChange(event.currentTarget.value);
+                        }
+                      }}
+                    />
 
                     <label htmlFor="attendCheckbox">attends</label>
                     <input
@@ -125,6 +161,33 @@ function App() {
                         );
                       }}
                     />
+                    {guest.id === editId ? (
+                      <button
+                        onClick={() => {
+                          handleNameUpdate(
+                            guest.id,
+                            firstNameChange,
+                            lastNameChange,
+                          ).catch((error) => console.log(error));
+                          setFirstNameChange('');
+                          setLastNameChange('');
+                          setEditId('');
+                          setIsReadOnly(true);
+                          setRefetch(!refetch);
+                        }}
+                      >
+                        Save Changes
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          setIsReadOnly(false);
+                          setEditId(guest.id);
+                        }}
+                      >
+                        Edit Names
+                      </button>
+                    )}
                     <button
                       aria-label={`Remove ${guest.firstName} ${guest.lastName}`}
                       onClick={() =>
