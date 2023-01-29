@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
+import { baseUrl } from './config';
+import DeleteAllGuests from './DeleteAllGuests';
 
 function App() {
   const [firstName, setFirstName] = useState('');
@@ -11,7 +13,6 @@ function App() {
   const [lastNameChange, setLastNameChange] = useState('');
   const [editId, setEditId] = useState('');
 
-  const baseUrl = 'http://localhost:4000';
   const inputRef = useRef(null);
 
   // the r of crud
@@ -50,17 +51,6 @@ function App() {
   async function handleRemove(id) {
     await fetch(`${baseUrl}/guests/${id}`, { method: 'DELETE' });
     setRefetch(!refetch);
-  }
-
-  async function deleteAllGuests() {
-    const response = await fetch(`${baseUrl}/guests`);
-    const allGuests = await response.json();
-    await allGuests.forEach((guest) => {
-      fetch(`${baseUrl}/guests/${guest.id}`, { method: 'DELETE' }).catch(
-        (error) => console.log(error),
-      );
-    });
-    setGuestList([]);
   }
 
   // the u of crud
@@ -204,11 +194,7 @@ function App() {
             })}
           </ul>
         )}
-        <button
-          onClick={() => deleteAllGuests().catch((error) => console.log(error))}
-        >
-          Delete all guests
-        </button>
+        <DeleteAllGuests delete={setGuestList} />
       </div>
     </div>
   );
