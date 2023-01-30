@@ -70,7 +70,7 @@ function App() {
       />
       <div>
         {isLoading ? (
-          <div>Loading ...</div>
+          <div>Loading...</div>
         ) : (
           <>
             <div onChange={(event) => setFilter(event.target.value)}>
