@@ -10,7 +10,6 @@ function DeleteAllGuests(props) {
       );
     });
   };
-  console.log(props.refetch);
   return (
     <div>
       <button

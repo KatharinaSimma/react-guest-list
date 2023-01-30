@@ -1,19 +1,18 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
+// import GuestList from './GuestList';
 import { baseUrl } from './config';
+import CreateGuest from './CreateGuest';
 import DeleteAllGuests from './DeleteAllGuests';
 
 function App() {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
   const [guestList, setGuestList] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [refetch, setRefetch] = useState(true);
+  const [filter, setFilter] = useState('all');
   const [isReadOnly, setIsReadOnly] = useState(true);
   const [firstNameChange, setFirstNameChange] = useState('');
   const [lastNameChange, setLastNameChange] = useState('');
   const [editId, setEditId] = useState('');
-
-  const inputRef = useRef(null);
 
   // the r of crud
   useEffect(() => {
@@ -21,31 +20,18 @@ function App() {
       setIsLoading(true);
       const response = await fetch(`${baseUrl}/guests`);
       const allGuests = await response.json();
-      setGuestList(allGuests);
+
+      if (filter === 'attending') {
+        setGuestList(allGuests.filter((guest) => guest.attending));
+      } else if (filter === 'notAttending') {
+        setGuestList(allGuests.filter((guest) => !guest.attending));
+      } else {
+        setGuestList(allGuests);
+      }
       setIsLoading(false);
     }
     fetchGuestList().catch((error) => console.log(error));
-  }, [refetch]);
-
-  // the c of crud
-  async function createGuest(first_name, last_name) {
-    if (!first_name || !last_name) {
-      alert('Please enter a full name!');
-    } else {
-      // create user
-      await fetch(`${baseUrl}/guests`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ firstName: first_name, lastName: last_name }),
-      });
-      setFirstName('');
-      setLastName('');
-      setRefetch(!refetch);
-      inputRef.current.focus();
-    }
-  }
+  }, [refetch, filter]);
 
   // the d of crud
   async function handleRemove(id) {
@@ -77,122 +63,142 @@ function App() {
 
   return (
     <div>
-      <h1>Guest List</h1>
-
-      <label htmlFor="firstName">First Name</label>
-      <input
-        value={firstName}
-        onChange={(event) => setFirstName(event.currentTarget.value)}
-        id="firstName"
-        ref={inputRef}
-        disabled={isLoading}
+      <h1>Kathi's Birthday Party</h1>
+      <CreateGuest
+        setRefetch={setRefetch}
+        refetch={refetch}
+        isLoading={isLoading}
       />
-      <br />
-      <label htmlFor="lastName">Last Name</label>
-      <input
-        value={lastName}
-        onChange={(event) => setLastName(event.currentTarget.value)}
-        id="lastName"
-        disabled={isLoading}
-        onKeyUp={(e) => {
-          if (e.key === 'Enter') {
-            createGuest(firstName, lastName).catch((error) =>
-              console.log(error),
-            );
-            setRefetch(!refetch);
-          }
-        }}
-      />
-      <br />
-
       <div>
         {isLoading ? (
           <div>... is Loading ...</div>
         ) : (
-          <ul>
-            {guestList.map((guest) => {
-              return (
-                <li key={guest.id + '_' + guest.lastName}>
-                  <div data-test-id="guest">
-                    <input
-                      readOnly={guest.id === editId ? isReadOnly : !isReadOnly}
-                      value={
-                        guest.id === editId ? firstNameChange : guest.firstName
-                      }
-                      placeholder={guest.firstName}
-                      onChange={(event) => {
-                        if (!isReadOnly) {
-                          setFirstNameChange(event.currentTarget.value);
+          <>
+            <div onChange={(event) => setFilter(event.target.value)}>
+              <label>
+                <input
+                  name="filter"
+                  type="radio"
+                  value="all"
+                  checked={filter === 'all'}
+                  readOnly
+                />
+                Show all guests
+              </label>
+              <label>
+                <input
+                  name="filter"
+                  type="radio"
+                  value="attending"
+                  checked={filter === 'attending'}
+                  readOnly
+                />
+                Attending
+              </label>
+              <label>
+                <input
+                  name="filter"
+                  type="radio"
+                  value="notAttending"
+                  checked={filter === 'notAttending'}
+                  readOnly
+                />
+                Not Attending
+              </label>
+              <p>{filter.guestFilter}</p>
+            </div>
+            <h2>Guest List</h2>
+            <ul>
+              {guestList.map((guest) => {
+                return (
+                  <li key={guest.id + '_' + guest.lastName}>
+                    <div data-test-id="guest">
+                      <input
+                        readOnly={
+                          guest.id === editId ? isReadOnly : !isReadOnly
                         }
-                      }}
-                    />
-                    <input
-                      readOnly={guest.id === editId ? isReadOnly : !isReadOnly}
-                      value={
-                        guest.id === editId ? lastNameChange : guest.lastName
-                      }
-                      placeholder={guest.lastName}
-                      onChange={(event) => {
-                        if (!isReadOnly) {
-                          setLastNameChange(event.currentTarget.value);
+                        value={
+                          guest.id === editId
+                            ? firstNameChange
+                            : guest.firstName
                         }
-                      }}
-                    />
+                        placeholder={guest.firstName}
+                        onChange={(event) => {
+                          if (!isReadOnly) {
+                            setFirstNameChange(event.currentTarget.value);
+                          }
+                        }}
+                      />
+                      <input
+                        readOnly={
+                          guest.id === editId ? isReadOnly : !isReadOnly
+                        }
+                        value={
+                          guest.id === editId ? lastNameChange : guest.lastName
+                        }
+                        placeholder={guest.lastName}
+                        onChange={(event) => {
+                          if (!isReadOnly) {
+                            setLastNameChange(event.currentTarget.value);
+                          }
+                        }}
+                      />
 
-                    <label htmlFor="attendCheckbox">attends</label>
-                    <input
-                      id="attendCheckbox"
-                      type="checkbox"
-                      checked={guest.attending}
-                      aria-label={`${guest.firstName} ${guest.lastName} attending status)`}
-                      onChange={() => {
-                        handleGuestUpdate(guest.id, !guest.attending).catch(
-                          (error) => console.log(error),
-                        );
-                      }}
-                    />
-                    {guest.id === editId ? (
-                      <button
-                        onClick={() => {
-                          handleNameUpdate(
-                            guest.id,
-                            firstNameChange,
-                            lastNameChange,
-                          ).catch((error) => console.log(error));
-                          setFirstNameChange('');
-                          setLastNameChange('');
-                          setEditId('');
-                          setIsReadOnly(true);
-                          setRefetch(!refetch);
+                      <label htmlFor="attendCheckbox">attends</label>
+                      <input
+                        id="attendCheckbox"
+                        type="checkbox"
+                        checked={guest.attending}
+                        aria-label={`${guest.firstName} ${guest.lastName} attending status)`}
+                        onChange={() => {
+                          handleGuestUpdate(guest.id, !guest.attending).catch(
+                            (error) => console.log(error),
+                          );
                         }}
-                      >
-                        Save Changes
-                      </button>
-                    ) : (
+                      />
+                      {guest.id === editId ? (
+                        <button
+                          onClick={() => {
+                            handleNameUpdate(
+                              guest.id,
+                              firstNameChange,
+                              lastNameChange,
+                            ).catch((error) => console.log(error));
+                            setFirstNameChange('');
+                            setLastNameChange('');
+                            setEditId('');
+                            setIsReadOnly(true);
+                            setRefetch(!refetch);
+                          }}
+                        >
+                          Save Changes
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            setIsReadOnly(false);
+                            setEditId(guest.id);
+                          }}
+                        >
+                          Edit Names
+                        </button>
+                      )}
                       <button
-                        onClick={() => {
-                          setIsReadOnly(false);
-                          setEditId(guest.id);
-                        }}
+                        aria-label={`Remove ${guest.firstName} ${guest.lastName}`}
+                        onClick={() =>
+                          handleRemove(guest.id).catch((error) =>
+                            console.log(error),
+                          )
+                        }
                       >
-                        Edit Names
+                        Remove
                       </button>
-                    )}
-                    <button
-                      aria-label={`Remove ${guest.firstName} ${guest.lastName}`}
-                      onClick={() =>
-                        handleRemove(guest.id).catch((error) =>
-                          console.log(error),
-                        )
-                      }
-                    >
-                      Remove
-                    </button>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </>
         )}
         <DeleteAllGuests delete={setGuestList} />
       </div>
