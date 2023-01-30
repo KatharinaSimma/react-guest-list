@@ -10,7 +10,7 @@ function CreateGuest(props) {
       alert('Please enter a full name!');
     } else {
       // create user
-      await fetch(`${baseUrl}/guests`, {
+      await fetch(`${baseUrl}/guests/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

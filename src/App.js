@@ -17,7 +17,7 @@ function App() {
   useEffect(() => {
     async function fetchGuestList() {
       setIsLoading(true);
-      const response = await fetch(`${baseUrl}/guests`);
+      const response = await fetch(`${baseUrl}/guests/`);
       const allGuests = await response.json();
 
       if (filter === 'attending') {
@@ -34,13 +34,13 @@ function App() {
 
   // the d of crud
   async function handleRemove(id) {
-    await fetch(`${baseUrl}/guests/${id}`, { method: 'DELETE' });
+    await fetch(`${baseUrl}/guests/${id}/`, { method: 'DELETE' });
     setRefetch(!refetch);
   }
 
   // the u of crud
   async function handleGuestUpdate(id, attending) {
-    await fetch(`${baseUrl}/guests/${id}`, {
+    await fetch(`${baseUrl}/guests/${id}/`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -51,7 +51,7 @@ function App() {
   }
 
   async function handleNameUpdate(id, first_name, last_name) {
-    await fetch(`${baseUrl}/guests/${id}`, {
+    await fetch(`${baseUrl}/guests/${id}/`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -70,7 +70,7 @@ function App() {
       />
       <div>
         {isLoading ? (
-          <div>... is Loading ...</div>
+          <div>Loading ...</div>
         ) : (
           <>
             <div onChange={(event) => setFilter(event.target.value)}>
