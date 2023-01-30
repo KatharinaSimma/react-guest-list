@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-// import GuestList from './GuestList';
 import { baseUrl } from './config';
 import CreateGuest from './CreateGuest';
 import DeleteAllGuests from './DeleteAllGuests';
