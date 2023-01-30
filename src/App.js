@@ -190,7 +190,7 @@ function App() {
                           )
                         }
                       >
-                        Remove
+                        Delete
                       </button>
                     </div>
                   </li>

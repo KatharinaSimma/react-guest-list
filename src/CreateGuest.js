@@ -25,7 +25,7 @@ function CreateGuest(props) {
 
   return (
     <>
-      <label htmlFor="firstName">First Name</label>
+      <label htmlFor="firstName">First name</label>
       <input
         value={firstName}
         onChange={(event) => setFirstName(event.currentTarget.value)}
@@ -33,7 +33,7 @@ function CreateGuest(props) {
         disabled={props.isLoading}
       />
       <br />
-      <label htmlFor="lastName">Last Name</label>
+      <label htmlFor="lastName">Last name</label>
       <input
         value={lastName}
         onChange={(event) => setLastName(event.currentTarget.value)}
