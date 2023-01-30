@@ -5,7 +5,7 @@ import DeleteAllGuests from './DeleteAllGuests';
 
 function App() {
   const [guestList, setGuestList] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [refetch, setRefetch] = useState(true);
   const [filter, setFilter] = useState('all');
   const [isReadOnly, setIsReadOnly] = useState(true);
