@@ -6,7 +6,6 @@ import DeleteAllGuests from './DeleteAllGuests';
 function App() {
   const [guestList, setGuestList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [refetch, setRefetch] = useState(true);
   const [filter, setFilter] = useState('all');
   const [isReadOnly, setIsReadOnly] = useState(true);
   const [firstNameChange, setFirstNameChange] = useState('');
@@ -30,12 +29,15 @@ function App() {
       setIsLoading(false);
     }
     fetchGuestList().catch((error) => console.log(error));
-  }, [refetch, filter]);
+  }, [filter]);
 
   // the d of crud
   async function handleRemove(id) {
-    await fetch(`${baseUrl}/guests/${id}/`, { method: 'DELETE' });
-    setRefetch(!refetch);
+    await fetch(`${baseUrl}/guests/${id}/`, {
+      method: 'DELETE',
+    });
+    const filteredGuestList = guestList.filter((guest) => guest.id !== id);
+    setGuestList(filteredGuestList);
   }
 
   // the u of crud
@@ -47,26 +49,43 @@ function App() {
       },
       body: JSON.stringify({ attending: attending }),
     });
-    setRefetch(!refetch);
+    const updatedGuestList = [...guestList];
+    const updatedGuest = updatedGuestList.find((guest) => guest.id === id);
+    updatedGuest.attending = !updatedGuest.attending;
+    setGuestList(updatedGuestList);
+    console.log('guestList', guestList);
   }
 
-  async function handleNameUpdate(id, first_name, last_name) {
+  async function handleNameUpdate(id, updatedFirstName, updatedLastName) {
     await fetch(`${baseUrl}/guests/${id}/`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ firstName: first_name, lastName: last_name }),
+      body: JSON.stringify({
+        firstName: updatedFirstName,
+        lastName: updatedLastName,
+      }),
     });
+    const updatedGuestList = [...guestList];
+    const updatedGuest = updatedGuestList.find((guest) => guest.id === id);
+    updatedGuest.firstName = updatedFirstName;
+    updatedGuest.lastName = updatedLastName;
+    setGuestList(updatedGuestList);
+    // clean up
+    setFirstNameChange('');
+    setLastNameChange('');
+    setEditId('');
+    setIsReadOnly(true);
   }
 
   return (
     <div>
       <h1>Kathi's Birthday Party</h1>
       <CreateGuest
-        setRefetch={setRefetch}
-        refetch={refetch}
         isLoading={isLoading}
+        setGuestList={setGuestList}
+        guestList={guestList}
       />
       <div>
         {isLoading ? (
@@ -163,11 +182,6 @@ function App() {
                               firstNameChange,
                               lastNameChange,
                             ).catch((error) => console.log(error));
-                            setFirstNameChange('');
-                            setLastNameChange('');
-                            setEditId('');
-                            setIsReadOnly(true);
-                            setRefetch(!refetch);
                           }}
                         >
                           Save Changes

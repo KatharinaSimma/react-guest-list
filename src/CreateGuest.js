@@ -5,21 +5,25 @@ function CreateGuest(props) {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
 
-  async function createGuest(first_name, last_name) {
-    if (!first_name || !last_name) {
+  async function createGuest(createdFirstName, createdLastName) {
+    if (!createdFirstName || !createdLastName) {
       alert('Please enter a full name!');
     } else {
       // create user
-      await fetch(`${baseUrl}/guests/`, {
+      const response = await fetch(`${baseUrl}/guests/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ firstName: first_name, lastName: last_name }),
+        body: JSON.stringify({
+          firstName: createdFirstName,
+          lastName: createdLastName,
+        }),
       });
+      const createdGuest = await response.json();
       setFirstName('');
       setLastName('');
-      props.setRefetch(!props.refetch);
+      props.setGuestList([...props.guestList, createdGuest]);
     }
   }
 
@@ -44,7 +48,6 @@ function CreateGuest(props) {
             createGuest(firstName, lastName).catch((error) =>
               console.log(error),
             );
-            props.setRefetch(!props.refetch);
           }
         }}
       />
