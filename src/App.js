@@ -126,97 +126,85 @@ function App() {
               <p>{filter.guestFilter}</p>
             </div>
             <h2>Guest List</h2>
-            <ul>
-              {guestList.length > 0 &&
-                guestList.map((guest) => {
-                  return (
-                    <div
-                      data-test-id="guest"
-                      key={guest.id + '_' + guest.lastName}
-                    >
-                      <li>
-                        <input
-                          readOnly={
-                            guest.id === editId ? isReadOnly : !isReadOnly
-                          }
-                          value={
-                            guest.id === editId
-                              ? firstNameChange
-                              : guest.firstName
-                          }
-                          placeholder={guest.firstName}
-                          onChange={(event) => {
-                            if (!isReadOnly) {
-                              setFirstNameChange(event.currentTarget.value);
-                            }
-                          }}
-                        />
-                        <input
-                          readOnly={
-                            guest.id === editId ? isReadOnly : !isReadOnly
-                          }
-                          value={
-                            guest.id === editId
-                              ? lastNameChange
-                              : guest.lastName
-                          }
-                          placeholder={guest.lastName}
-                          onChange={(event) => {
-                            if (!isReadOnly) {
-                              setLastNameChange(event.currentTarget.value);
-                            }
-                          }}
-                        />
+            {guestList.length > 0 &&
+              guestList.map((guest) => {
+                return (
+                  <div
+                    data-test-id="guest"
+                    key={guest.id + '_' + guest.lastName}
+                  >
+                    <input
+                      readOnly={guest.id === editId ? isReadOnly : !isReadOnly}
+                      value={
+                        guest.id === editId ? firstNameChange : guest.firstName
+                      }
+                      placeholder={guest.firstName}
+                      onChange={(event) => {
+                        if (!isReadOnly) {
+                          setFirstNameChange(event.currentTarget.value);
+                        }
+                      }}
+                    />
+                    <input
+                      readOnly={guest.id === editId ? isReadOnly : !isReadOnly}
+                      value={
+                        guest.id === editId ? lastNameChange : guest.lastName
+                      }
+                      placeholder={guest.lastName}
+                      onChange={(event) => {
+                        if (!isReadOnly) {
+                          setLastNameChange(event.currentTarget.value);
+                        }
+                      }}
+                    />
 
-                        <label htmlFor="attendCheckbox">attends</label>
-                        <input
-                          id="attendCheckbox"
-                          type="checkbox"
-                          checked={guest.attending}
-                          aria-label={`${guest.firstName} ${guest.lastName} attending status)`}
-                          onChange={() => {
-                            handleGuestUpdate(guest.id, !guest.attending).catch(
-                              (error) => console.log(error),
-                            );
-                          }}
-                        />
-                        {guest.id === editId ? (
-                          <button
-                            onClick={() => {
-                              handleNameUpdate(
-                                guest.id,
-                                firstNameChange,
-                                lastNameChange,
-                              ).catch((error) => console.log(error));
-                            }}
-                          >
-                            Save Changes
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => {
-                              setIsReadOnly(false);
-                              setEditId(guest.id);
-                            }}
-                          >
-                            Edit Names
-                          </button>
-                        )}
-                        <button
-                          aria-label={`Remove ${guest.firstName} ${guest.lastName}`}
-                          onClick={() =>
-                            handleRemove(guest.id).catch((error) =>
-                              console.log(error),
-                            )
-                          }
-                        >
-                          Delete
-                        </button>
-                      </li>
-                    </div>
-                  );
-                })}
-            </ul>
+                    <label htmlFor="attendCheckbox">attends</label>
+                    <input
+                      id="attendCheckbox"
+                      type="checkbox"
+                      checked={guest.attending}
+                      aria-label={`${guest.firstName} ${guest.lastName} attending status)`}
+                      onChange={() => {
+                        handleGuestUpdate(guest.id, !guest.attending).catch(
+                          (error) => console.log(error),
+                        );
+                      }}
+                    />
+                    {guest.id === editId ? (
+                      <button
+                        onClick={() => {
+                          handleNameUpdate(
+                            guest.id,
+                            firstNameChange,
+                            lastNameChange,
+                          ).catch((error) => console.log(error));
+                        }}
+                      >
+                        Save Changes
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          setIsReadOnly(false);
+                          setEditId(guest.id);
+                        }}
+                      >
+                        Edit Names
+                      </button>
+                    )}
+                    <button
+                      aria-label={`Remove ${guest.firstName} ${guest.lastName}`}
+                      onClick={() =>
+                        handleRemove(guest.id).catch((error) =>
+                          console.log(error),
+                        )
+                      }
+                    >
+                      Delete
+                    </button>
+                  </div>
+                );
+              })}
           </>
         )}
         <DeleteAllGuests delete={setGuestList} />
