@@ -134,7 +134,7 @@ function App() {
                     key={guest.id + '_' + guest.lastName}
                   >
                     <input
-                      readOnly={guest.id === editId ? isReadOnly : !isReadOnly}
+                      disabled={guest.id === editId ? isReadOnly : !isReadOnly}
                       value={
                         guest.id === editId ? firstNameChange : guest.firstName
                       }
@@ -146,7 +146,7 @@ function App() {
                       }}
                     />
                     <input
-                      readOnly={guest.id === editId ? isReadOnly : !isReadOnly}
+                      disabled={guest.id === editId ? isReadOnly : !isReadOnly}
                       value={
                         guest.id === editId ? lastNameChange : guest.lastName
                       }
