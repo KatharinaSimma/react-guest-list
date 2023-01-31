@@ -7,7 +7,6 @@ function App() {
   const [guestList, setGuestList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState('all');
-  const [isReadOnly, setIsReadOnly] = useState(true);
   const [firstNameChange, setFirstNameChange] = useState('');
   const [lastNameChange, setLastNameChange] = useState('');
   const [editId, setEditId] = useState('');
@@ -76,7 +75,6 @@ function App() {
     setFirstNameChange('');
     setLastNameChange('');
     setEditId('');
-    setIsReadOnly(true);
   }
 
   return (
@@ -133,32 +131,29 @@ function App() {
                     data-test-id="guest"
                     key={guest.id + '_' + guest.lastName}
                   >
-                    <input
-                      disabled={guest.id === editId ? isReadOnly : !isReadOnly}
-                      value={
-                        guest.id === editId ? firstNameChange : guest.firstName
-                      }
-                      placeholder={guest.firstName}
-                      onChange={(event) => {
-                        if (!isReadOnly) {
+                    {guest.id === editId ? (
+                      <input
+                        value={firstNameChange}
+                        placeholder={guest.firstName}
+                        onChange={(event) => {
                           setFirstNameChange(event.currentTarget.value);
-                        }
-                      }}
-                    />
-                    <input
-                      disabled={guest.id === editId ? isReadOnly : !isReadOnly}
-                      value={
-                        guest.id === editId ? lastNameChange : guest.lastName
-                      }
-                      placeholder={guest.lastName}
-                      onChange={(event) => {
-                        if (!isReadOnly) {
-                          setLastNameChange(event.currentTarget.value);
-                        }
-                      }}
-                    />
+                        }}
+                      />
+                    ) : (
+                      <span>{`${guest.firstName} `}</span>
+                    )}
 
-                    <label htmlFor="attendCheckbox">attends</label>
+                    {guest.id === editId ? (
+                      <input
+                        value={lastNameChange}
+                        placeholder={guest.lastName}
+                        onChange={(event) => {
+                          setLastNameChange(event.currentTarget.value);
+                        }}
+                      />
+                    ) : (
+                      <span>{guest.lastName}</span>
+                    )}
                     <input
                       id="attendCheckbox"
                       type="checkbox"
@@ -170,6 +165,7 @@ function App() {
                         );
                       }}
                     />
+                    <label htmlFor="attendCheckbox">attends</label>
                     {guest.id === editId ? (
                       <button
                         onClick={() => {
@@ -185,7 +181,6 @@ function App() {
                     ) : (
                       <button
                         onClick={() => {
-                          setIsReadOnly(false);
                           setEditId(guest.id);
                         }}
                       >
