@@ -11,6 +11,7 @@ function App() {
   const [lastNameChange, setLastNameChange] = useState('');
   const [editId, setEditId] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [listErrorMessage, setListErrorMessage] = useState('');
 
   // the r of crud
   useEffect(() => {
@@ -28,7 +29,7 @@ function App() {
       }
       setIsLoading(false);
     }
-    fetchGuestList().catch((error) => console.log(error));
+    fetchGuestList().catch((error) => setListErrorMessage(error.message));
   }, [filter]);
 
   // the d of crud
@@ -53,7 +54,6 @@ function App() {
     const updatedGuest = updatedGuestList.find((guest) => guest.id === id);
     updatedGuest.attending = !updatedGuest.attending;
     setGuestList(updatedGuestList);
-    console.log('guestList', guestList);
   }
 
   async function handleNameUpdate(id, updatedFirstName, updatedLastName) {
@@ -125,6 +125,7 @@ function App() {
               <p>{filter.guestFilter}</p>
             </div>
             <h2>Guest List</h2>
+            <p style={{ color: 'red' }}>{listErrorMessage}</p>
             {guestList.length > 0 &&
               guestList.map((guest) => {
                 return (
