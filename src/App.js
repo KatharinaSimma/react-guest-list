@@ -10,6 +10,7 @@ function App() {
   const [firstNameChange, setFirstNameChange] = useState('');
   const [lastNameChange, setLastNameChange] = useState('');
   const [editId, setEditId] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   // the r of crud
   useEffect(() => {
@@ -129,7 +130,7 @@ function App() {
                 return (
                   <div
                     data-test-id="guest"
-                    key={guest.id + '_' + guest.lastName}
+                    key={`${guest.id}_${guest.lastName}`}
                   >
                     {guest.id === editId ? (
                       <input
@@ -161,7 +162,7 @@ function App() {
                       aria-label={`${guest.firstName} ${guest.lastName} attending status)`}
                       onChange={() => {
                         handleGuestUpdate(guest.id, !guest.attending).catch(
-                          (error) => console.log(error),
+                          (error) => setErrorMessage(error.message),
                         );
                       }}
                     />
@@ -173,7 +174,7 @@ function App() {
                             guest.id,
                             firstNameChange,
                             lastNameChange,
-                          ).catch((error) => console.log(error));
+                          ).catch((error) => setErrorMessage(error.message));
                         }}
                       >
                         Save Changes
@@ -191,12 +192,13 @@ function App() {
                       aria-label={`Remove ${guest.firstName} ${guest.lastName}`}
                       onClick={() =>
                         handleRemove(guest.id).catch((error) =>
-                          console.log(error),
+                          setErrorMessage(error.message),
                         )
                       }
                     >
                       Delete
                     </button>
+                    <span style={{ color: 'red' }}>{errorMessage}</span>
                   </div>
                 );
               })}

@@ -4,6 +4,7 @@ import { baseUrl } from './config';
 function CreateGuest(props) {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   async function createGuest(createdFirstName, createdLastName) {
     if (!createdFirstName || !createdLastName) {
@@ -11,7 +12,7 @@ function CreateGuest(props) {
     } else {
       // create user
       const response = await fetch(`${baseUrl}/guests/`, {
-        method: 'POST',
+        method: 'OST',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -46,11 +47,12 @@ function CreateGuest(props) {
         onKeyUp={(e) => {
           if (e.key === 'Enter') {
             createGuest(firstName, lastName).catch((error) =>
-              console.log(error),
+              setErrorMessage(error.message),
             );
           }
         }}
       />
+      <p style={{ color: 'red' }}>{errorMessage}</p>
     </>
   );
 }
